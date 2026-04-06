@@ -24,16 +24,17 @@ def main():
     random_comics_id = random.randint(1, comics_total)
     random_comics = requests.get(f'https://xkcd.com/{random_comics_id}/info.0.json')
     random_comics.raise_for_status()
-    image_url = random_comics.json()["img"]
-    comics_title = random_comics.json()["title"]
-    comics_comment = random_comics.json()["alt"]
-    comics_path = f'{comics_title}{Path(image_url).suffix}'
+    comics = random_comics.json()
+    image_url = comics["img"]
+    comics_title = comics["title"]
+    comics_comment = comics["alt"]
+    image_path = f'{comics_title}{Path(image_url).suffix}'
     try:
-        download_image(image_url, comics_path)
-        bot.send_photo(chat_id=channel_id, photo=Path(comics_path).read_bytes(), caption=comics_comment)
+        download_image(image_url, image_path)
+        bot.send_photo(chat_id=channel_id, photo=Path(image_path).read_bytes(), caption=comics_comment)
     finally:
-        if Path(comics_path).exists():
-            Path(comics_path).unlink()
+        if Path(image_path).exists():
+            Path(image_path).unlink()
 
 
 if __name__ == '__main__':
