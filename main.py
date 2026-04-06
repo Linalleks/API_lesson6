@@ -27,12 +27,13 @@ def main():
     image_url = random_comics.json()["img"]
     comics_title = random_comics.json()["title"]
     comics_comment = random_comics.json()["alt"]
-    comics_download_path = f'{comics_title}{Path(image_url).suffix}'
-    download_image(image_url, comics_download_path)
-
-    comics = Path(comics_download_path)
-    bot.send_photo(chat_id=channel_id, photo=comics.read_bytes(), caption=comics_comment)
-    comics.unlink()
+    comics_path = f'{comics_title}{Path(image_url).suffix}'
+    try:
+        download_image(image_url, comics_path)
+        bot.send_photo(chat_id=channel_id, photo=Path(comics_path).read_bytes(), caption=comics_comment)
+    finally:
+        if Path(comics_path).exists():
+            Path(comics_path).unlink()
 
 
 if __name__ == '__main__':
